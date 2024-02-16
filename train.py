@@ -96,3 +96,13 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'validation'], loc='upper left')
 plt.show()
+
+keras.utils.plot_model(
+    model,
+    to_file="D:\source_detection\plots\model.png",
+    show_shapes=True,
+    show_dtype=True,
+    show_layer_names=True,
+    dpi=200,
+)
+

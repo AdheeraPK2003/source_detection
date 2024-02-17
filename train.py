@@ -30,17 +30,17 @@ df["email"] = df["email"].progress_apply(lambda text: text.replace("_", ""))
 df["email"] = df["email"].progress_apply(lambda text: re.sub(r'\S+@\S+', '', text))
 df["email"] = df["email"].progress_apply(lambda text: re.sub(r'\d', '', text))
 
-def replace_text(source_pattern, destination_pattern,text):
+def replace_text(text,source_pattern, destination_pattern):
     text = text.replace(source_pattern, destination_pattern)
     return text
-df["email"] = df["email"].progress_apply(lambda x: replace_text("won't", "will not", x))
-df["email"] = df["email"].progress_apply(lambda x: replace_text("can't", "can not", x))
-df["email"] = df["email"].progress_apply(lambda x: replace_text("n't", "not", x))
-df["email"] = df["email"].progress_apply(lambda x: replace_text("re", "are",x))
-df["email"] = df["email"].progress_apply(lambda x: replace_text("s", "is", x))
-df["email"] = df["email"].progress_apply(lambda x: replace_text("d", "would",x))
-df["email"] = df["email"].progress_apply(lambda x: replace_text("ll", "will",x))
-df["email"] = df["email"].progress_apply(lambda x: replace_text("ve", "have",x))
+df["email"] = df["email"].progress_apply(lambda x: replace_text(x, "won't", "will not"))
+df["email"] = df["email"].progress_apply(lambda x: replace_text(x,"can't", "can not"))
+df["email"] = df["email"].progress_apply(lambda x: replace_text(x, "n't", "not"))
+df["email"] = df["email"].progress_apply(lambda x: replace_text(x,"'re", "are"))
+df["email"] = df["email"].progress_apply(lambda x: replace_text(x,"'s", "is"))
+df["email"] = df["email"].progress_apply(lambda x: replace_text(x,"'d", "would"))
+df["email"] = df["email"].progress_apply(lambda x: replace_text(x,"'ll", "will"))
+df["email"] = df["email"].progress_apply(lambda x: replace_text(x,"'ve", "have"))
 
 def convert_to_lowercase(text):
     return text.lower()

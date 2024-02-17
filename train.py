@@ -25,10 +25,10 @@ def remove_pattern(text, pattern):
     return " ".join(cleaned_text.split(" "))
 
 df["email"] = df["email"].progress_apply(lambda x: remove_pattern(x, "NUMBER"))
-df["email"] = df["email"].progress_apply(lambda text: re.sub(r'https?://\S+|www\.\S+', '', text))
-df["email"] = df["email"].progress_apply(lambda text: text.replace("_", ""))
-df["email"] = df["email"].progress_apply(lambda text: re.sub(r'\S+@\S+', '', text))
-df["email"] = df["email"].progress_apply(lambda text: re.sub(r'\d', '', text))
+df["email"] = df["email"].progress_apply(lambda text: remove_pattern(text, r'https?://\S+|www\.\S+'))
+df["email"] = df["email"].progress_apply(lambda text: remove_pattern(text, "_"))
+df["email"] = df["email"].progress_apply(lambda text: remove_pattern(text, r'\S+@\S+'))
+df["email"] = df["email"].progress_apply(lambda text: remove_pattern(text,r'\d'))
 
 def replace_text(text,source_pattern, destination_pattern):
     text = text.replace(source_pattern, destination_pattern)

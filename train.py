@@ -12,6 +12,7 @@ from tensorflow.keras.optimizers import Adam
 from keras.models import Model
 from matplotlib import pyplot as plt
 import keras
+import pickle
 
 file_path = "D:\main project\data\spam_or_not_spam.csv"
 df = pd.read_csv(file_path)
@@ -61,6 +62,10 @@ max_words=(length_of_the_messages.str.len().max())
 keras_tokenizer=tf.keras.preprocessing.text.Tokenizer(
     num_words=max_words)
 keras_tokenizer.fit_on_texts(df["email"])
+
+with open('tokenizer.pkl', 'wb') as handle:
+    pickle.dump(keras_tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 X_train_sequence=keras_tokenizer.texts_to_sequences(X_train)        
 X_test_sequence=keras_tokenizer.texts_to_sequences(X_test)
 

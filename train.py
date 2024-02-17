@@ -44,8 +44,11 @@ df["email"] = df["email"].progress_apply(lambda x: replace_text("ve", "have",x))
 
 def convert_to_lowercase(text):
     return text.lower()
+df["email"] = df["email"].progress_apply(lambda x: convert_to_lowercase(x))
+
 def replace_non_alphabets(text, replacement=' '):
     return re.sub(r'[^a-zA-Z]+', replacement, text)
+df["email"] = df["email"].progress_apply(lambda x: replace_non_alphabets(x, ' '))
 
 X= df['email']
 y=df['label']

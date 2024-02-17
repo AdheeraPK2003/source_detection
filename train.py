@@ -13,6 +13,7 @@ from keras.models import Model
 from matplotlib import pyplot as plt
 import keras
 import pickle
+import numpy as np
 
 file_path = "D:\main project\data\spam_or_not_spam.csv"
 df = pd.read_csv(file_path)
@@ -53,8 +54,13 @@ df["email"] = df["email"].progress_apply(lambda x: replace_non_alphabets(x, ' ')
 
 X= df['email']
 y=df['label']
+
+
 X_train, X_test, y_train, y_test = train_test_split(
   X,y , random_state=104,test_size=0.25, shuffle=True)
+
+y_train = np.asarray(y_train).astype('float32').reshape((-1,1))
+y_test = np.asarray(y_test).astype('float32').reshape((-1,1))
 
 length_of_the_messages = df["email"].str.split("\\s+")
 max_words=(length_of_the_messages.str.len().max())
@@ -82,11 +88,11 @@ X_test_sequence,
 train_pad_sequence.shape
 
 input_layer= Input(shape=(1000,))
-dense_layer1= Dense(16)(input_layer)
-dense_layer2= Dense(32)(dense_layer1)
-dense_layer3= Dense(64)(dense_layer2)
-dense_layer4= Dense(128)(dense_layer3)
-output_layer= Dense(2)(dense_layer4)
+dense_layer1= Dense(16, activation='relu')(input_layer)
+dense_layer2= Dense(32, activation='relu')(dense_layer1)
+dense_layer3= Dense(64, activation='relu')(dense_layer2)
+dense_layer4= Dense(128, activation='relu')(dense_layer3)
+output_layer= Dense(2, activation='softmax')(dense_layer4)
 
 optimizer_adam=Adam(
     learning_rate=0.001,
@@ -94,7 +100,7 @@ optimizer_adam=Adam(
 
 model = Model(inputs=input_layer, outputs=output_layer)
 model.compile(optimizer_adam,
-              loss=tf.keras.losses.BinaryCrossentropy(),
+              loss='sparse_categorical_crossentropy',
               metrics=["accuracy"]
               )
 model_checkpoint_callback=keras.callbacks.ModelCheckpoint(

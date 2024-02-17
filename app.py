@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import re
 import pickle
 from keras.layers import Input
@@ -28,49 +29,52 @@ st.write("""
 
 email_content = st.text_input('')
 
-email_content = remove_pattern(email_content, "NUMBER")
-email_content = remove_pattern(email_content, r"https?://\S+|www\.\S+'")
-email_content = remove_pattern(email_content, r"\S+@\S+")
-email_content = remove_pattern(email_content, r"'\d'")
-email_content = remove_pattern(email_content, "_")
+if st.button("Predict") and email_content:
+    email_content = remove_pattern(email_content, "NUMBER")
+    email_content = remove_pattern(email_content, r"https?://\S+|www\.\S+'")
+    email_content = remove_pattern(email_content, r"\S+@\S+")
+    email_content = remove_pattern(email_content, r"'\d'")
+    email_content = remove_pattern(email_content, "_")
 
-email_content = replace_text(email_content, "won't","will not")
-email_content = replace_text(email_content, "can't", "can not")
-email_content = replace_text(email_content, "n't", "not" )
-email_content = replace_text(email_content, "'re", "are" )
-email_content = replace_text(email_content, "'s", "is")
-email_content = replace_text(email_content, "'d", "would")
-email_content = replace_text(email_content, "'ll", "will")
-email_content = replace_text(email_content, "'ve", "have")
-st.write('entered text is \n\r', email_content)
+    email_content = replace_text(email_content, "won't","will not")
+    email_content = replace_text(email_content, "can't", "can not")
+    email_content = replace_text(email_content, "n't", "not" )
+    email_content = replace_text(email_content, "'re", "are" )
+    email_content = replace_text(email_content, "'s", "is")
+    email_content = replace_text(email_content, "'d", "would")
+    email_content = replace_text(email_content, "'ll", "will")
+    email_content = replace_text(email_content, "'ve", "have")
+    st.write('entered text is \n\r', email_content)
 
-test_sequense=keras_tokenizer.texts_to_sequences([email_content])
-test_sequence=pad_sequences(test_sequense,
-    maxlen=1000,
-    padding='post',  
-)
+    test_sequense=keras_tokenizer.texts_to_sequences([email_content])
+    test_sequence=pad_sequences(test_sequense,
+        maxlen=1000,
+        padding='post',  
+    )
 
-input_layer= Input(shape=(1000,))
-dense_layer1= Dense(16, activation='relu')(input_layer)
-dense_layer2= Dense(32, activation='relu')(dense_layer1)
-dense_layer3= Dense(64, activation='relu')(dense_layer2)
-dense_layer4= Dense(128, activation='relu')(dense_layer3)
-output_layer= Dense(2, activation='softmax')(dense_layer4)
+    input_layer= Input(shape=(1000,))
+    dense_layer1= Dense(16, activation='relu')(input_layer)
+    dense_layer2= Dense(32, activation='relu')(dense_layer1)
+    dense_layer3= Dense(64, activation='relu')(dense_layer2)
+    dense_layer4= Dense(128, activation='relu')(dense_layer3)
+    output_layer= Dense(2, activation='softmax')(dense_layer4)
 
-optimizer_adam=Adam(
-    learning_rate=0.001,
-)
+    optimizer_adam=Adam(
+        learning_rate=0.001,
+    )
 
-model = Model(inputs=input_layer, outputs=output_layer)
-model.compile(optimizer_adam,
-              loss='sparse_categorical_crossentropy',
-              metrics=["accuracy"]
-              )
+    model = Model(inputs=input_layer, outputs=output_layer)
+    model.compile(optimizer_adam,
+                loss='sparse_categorical_crossentropy',
+                metrics=["accuracy"]
+                )
 
-model.build(input_shape=(1000,))
-model.load_weights('D:\source_detection\model\model.hdf5')
-y_pred = model.predict([test_sequence], verbose=0)
+    model.build(input_shape=(1000,))
+    model.load_weights('D:\source_detection\model\model.hdf5')
+    y_pred = model.predict([test_sequence], verbose=0)[0]
+    spam_percentage = np.round(y_pred[0]*100, 2)
+    ham_percentage = np.round(y_pred[1]*100, 2)
 
-st.button("Predict", type="primary")
-
-print(y_pred)
+    col1,col2 = st.columns(2)
+    col1.metric("Spam Probability %", value=spam_percentage)
+    col2.metric("Not Spam Probability %", value=ham_percentage)

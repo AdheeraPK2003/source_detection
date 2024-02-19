@@ -22,7 +22,7 @@ with open('tokenizer.pkl', 'rb') as handle:
 
 
 st.write("""
-# Spam Email Classifier
+# Spam Message Classifier Using Deep Learning
 """)
  
 
